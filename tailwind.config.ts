@@ -48,9 +48,9 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         health: {
-          success: "hsl(var(--health-success))",
-          warning: "hsl(var(--health-warning))",
-          danger: "hsl(var(--health-danger))",
+          low: "hsl(var(--health-low))",
+          normal: "hsl(var(--health-normal))",
+          high: "hsl(var(--health-high))",
           info: "hsl(var(--health-info))",
         },
         sidebar: {
@@ -68,10 +68,12 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-card': 'var(--gradient-card)',
         'gradient-health': 'var(--gradient-health)',
+        'gradient-glow': 'var(--gradient-glow)',
       },
       boxShadow: {
         'health': 'var(--shadow-health)',
         'card-custom': 'var(--shadow-card)',
+        'glow': 'var(--shadow-glow)',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -80,6 +82,25 @@ export default {
       },
       transitionTimingFunction: {
         'smooth': 'var(--transition-smooth)',
+        'bounce': 'var(--transition-bounce)',
+      },
+      keyframes: {
+        "pulse-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 20px hsl(var(--health-normal) / 0.4)",
+          },
+          "50%": {
+            boxShadow: "0 0 40px hsl(var(--health-normal) / 0.8)",
+          },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+      },
+      animation: {
+        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
+        "float": "float 6s ease-in-out infinite",
       },
       keyframes: {
         "accordion-down": {

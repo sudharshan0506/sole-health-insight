@@ -3,6 +3,9 @@ import { HealthMetricCard } from "@/components/HealthMetricCard";
 import { HealthChart } from "@/components/HealthChart";
 import { AIInsights } from "@/components/AIInsights";
 import { ShoeStatus } from "@/components/ShoeStatus";
+import { FoodSuggestions } from "@/components/FoodSuggestions";
+import { InsulinAlerts } from "@/components/InsulinAlerts";
+import { HospitalFinder } from "@/components/HospitalFinder";
 import { Activity, Droplet, Heart, Thermometer } from "lucide-react";
 
 const Dashboard = () => {
@@ -44,7 +47,8 @@ const Dashboard = () => {
   const [shoeStatus, setShoeStatus] = useState({
     isConnected: true,
     batteryLevel: 85,
-    signalStrength: 92
+    signalStrength: 92,
+    isCharging: false
   });
 
   // Simulate real-time data updates
@@ -74,16 +78,23 @@ const Dashboard = () => {
 
   const currentData = healthData[healthData.length - 1];
 
+  // Function to determine glucose status
+  const getGlucoseStatus = (glucose: number) => {
+    if (glucose < 70) return "warning"; // Low
+    if (glucose > 140) return "danger"; // High
+    return "normal"; // Normal
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+        <div className="text-center space-y-4">
+          <h1 className="text-5xl font-black bg-gradient-primary bg-clip-text text-transparent animate-pulse-glow">
             Smart Shoe Health Monitor
           </h1>
-          <p className="text-muted-foreground">
-            Revolutionary non-invasive health monitoring through intelligent footwear
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Revolutionary non-invasive health monitoring through intelligent footwear technology
           </p>
         </div>
 
@@ -91,13 +102,13 @@ const Dashboard = () => {
         <ShoeStatus {...shoeStatus} />
 
         {/* Health Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <HealthMetricCard
             title="Glucose Level"
             value={Math.round(currentData.glucose).toString()}
             unit="mg/dL"
             trend={currentData.glucose > healthData[healthData.length - 2]?.glucose ? "up" : "down"}
-            status={currentData.glucose < 100 ? "normal" : currentData.glucose < 140 ? "warning" : "danger"}
+            status={getGlucoseStatus(currentData.glucose)}
             icon={<Droplet className="h-5 w-5" />}
           />
           
@@ -129,11 +140,23 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Chart and AI Insights */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <HealthChart data={healthData} />
-          <AIInsights insights={aiInsights} />
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Left Column - Chart and AI */}
+          <div className="xl:col-span-2 space-y-8">
+            <HealthChart data={healthData} />
+            <AIInsights insights={aiInsights} />
+          </div>
+          
+          {/* Right Column - Food Suggestions */}
+          <div className="space-y-8">
+            <FoodSuggestions glucoseLevel={currentData.glucose} />
+            <InsulinAlerts />
+          </div>
         </div>
+
+        {/* Hospital Finder */}
+        <HospitalFinder />
       </div>
     </div>
   );
