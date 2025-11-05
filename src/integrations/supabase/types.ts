@@ -14,7 +14,156 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      food_recommendations: {
+        Row: {
+          calories: number | null
+          food_items: Json
+          glucose_impact: string | null
+          id: string
+          meal_type: string
+          recommended_at: string | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          food_items: Json
+          glucose_impact?: string | null
+          id?: string
+          meal_type: string
+          recommended_at?: string | null
+          user_id: string
+        }
+        Update: {
+          calories?: number | null
+          food_items?: Json
+          glucose_impact?: string | null
+          id?: string
+          meal_type?: string
+          recommended_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_history: {
+        Row: {
+          blood_pressure_diastolic: number
+          blood_pressure_systolic: number
+          exercise_duration: number | null
+          glucose_level: number
+          heart_rate: number
+          id: string
+          notes: string | null
+          recorded_at: string | null
+          steps: number | null
+          temperature: number
+          user_id: string
+        }
+        Insert: {
+          blood_pressure_diastolic: number
+          blood_pressure_systolic: number
+          exercise_duration?: number | null
+          glucose_level: number
+          heart_rate: number
+          id?: string
+          notes?: string | null
+          recorded_at?: string | null
+          steps?: number | null
+          temperature: number
+          user_id: string
+        }
+        Update: {
+          blood_pressure_diastolic?: number
+          blood_pressure_systolic?: number
+          exercise_duration?: number | null
+          glucose_level?: number
+          heart_rate?: number
+          id?: string
+          notes?: string | null
+          recorded_at?: string | null
+          steps?: number | null
+          temperature?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medication_alerts: {
+        Row: {
+          alert_date: string | null
+          created_at: string | null
+          dosage: string
+          frequency: string
+          id: string
+          is_taken: boolean | null
+          medication_name: string
+          scheduled_time: string
+          taken_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_date?: string | null
+          created_at?: string | null
+          dosage: string
+          frequency: string
+          id?: string
+          is_taken?: boolean | null
+          medication_name: string
+          scheduled_time: string
+          taken_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_date?: string | null
+          created_at?: string | null
+          dosage?: string
+          frequency?: string
+          id?: string
+          is_taken?: boolean | null
+          medication_name?: string
+          scheduled_time?: string
+          taken_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number
+          created_at: string | null
+          email: string
+          full_name: string
+          gender: string
+          height: number
+          id: string
+          mobile_number: string | null
+          updated_at: string | null
+          weight: number
+        }
+        Insert: {
+          age: number
+          created_at?: string | null
+          email: string
+          full_name: string
+          gender: string
+          height: number
+          id: string
+          mobile_number?: string | null
+          updated_at?: string | null
+          weight: number
+        }
+        Update: {
+          age?: number
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          gender?: string
+          height?: number
+          id?: string
+          mobile_number?: string | null
+          updated_at?: string | null
+          weight?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
