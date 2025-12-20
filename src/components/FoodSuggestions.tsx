@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Utensils, Apple, Salad, Fish } from "lucide-react";
+import { FullMealPlan } from "./FullMealPlan";
 
 interface FoodSuggestion {
   name: string;
@@ -142,9 +142,7 @@ export const FoodSuggestions = ({ glucoseLevel }: FoodSuggestionsProps) => {
         ))}
       </div>
       
-      <Button className="w-full mt-4 bg-gradient-primary text-primary-foreground hover:shadow-health transition-bounce">
-        View Full Meal Plan
-      </Button>
+      <FullMealPlan glucoseLevel={glucoseLevel} />
     </Card>
   );
 };
