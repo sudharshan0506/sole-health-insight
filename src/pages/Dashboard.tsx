@@ -6,19 +6,9 @@ import { ShoeStatus } from "@/components/ShoeStatus";
 import { FoodSuggestions } from "@/components/FoodSuggestions";
 import { InsulinAlerts } from "@/components/InsulinAlerts";
 import { HospitalFinder } from "@/components/HospitalFinder";
-import { MedicationAlerts } from "@/components/MedicationAlerts";
-import { HealthHistory } from "@/components/HealthHistory";
-import { ActivityTracking } from "@/components/ActivityTracking";
-import { NotificationSettings } from "@/components/NotificationSettings";
-import { Activity, Droplet, Heart, Thermometer, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useHealthNotifications } from "@/hooks/useHealthNotifications";
+import { Activity, Droplet, Heart, Thermometer } from "lucide-react";
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
   const [healthData, setHealthData] = useState([
     { time: "10:00", glucose: 95, heartRate: 72, bloodPressureSys: 120, bloodPressureDia: 80, temperature: 98.6 },
     { time: "10:15", glucose: 98, heartRate: 75, bloodPressureSys: 118, bloodPressureDia: 78, temperature: 98.4 },
@@ -27,7 +17,32 @@ const Dashboard = () => {
     { time: "11:00", glucose: 94, heartRate: 71, bloodPressureSys: 117, bloodPressureDia: 77, temperature: 98.6 },
   ]);
 
-  const [previousData, setPreviousData] = useState<typeof healthData[0] | null>(null);
+  const [aiInsights, setAiInsights] = useState([
+    {
+      id: "1",
+      type: "normal" as const,
+      title: "Glucose Levels Stable",
+      message: "Your glucose levels are within the normal range (70-100 mg/dL). Keep up the good work!",
+      confidence: 95,
+      timestamp: "2 minutes ago"
+    },
+    {
+      id: "2",
+      type: "recommendation" as const,
+      title: "Heart Rate Optimization",
+      message: "Consider light exercise to maintain optimal cardiovascular health. Your current heart rate suggests good fitness.",
+      confidence: 87,
+      timestamp: "5 minutes ago"
+    },
+    {
+      id: "3",
+      type: "prediction" as const,
+      title: "Glucose Trend Analysis",
+      message: "Based on current patterns, glucose levels may increase slightly after meals. Monitor for next 2 hours.",
+      confidence: 78,
+      timestamp: "10 minutes ago"
+    }
+  ]);
 
   const [shoeStatus, setShoeStatus] = useState({
     isConnected: true,
@@ -35,31 +50,6 @@ const Dashboard = () => {
     signalStrength: 92,
     isCharging: false
   });
-
-  const [activityData, setActivityData] = useState({
-    steps: 4523,
-    exerciseMinutes: 15
-  });
-
-  // Save health data to history periodically
-  const saveHealthToHistory = async (data: typeof healthData[0]) => {
-    if (!user) return;
-
-    try {
-      await supabase.from("health_history").insert({
-        user_id: user.id,
-        glucose_level: Math.round(data.glucose),
-        heart_rate: Math.round(data.heartRate),
-        blood_pressure_systolic: Math.round(data.bloodPressureSys),
-        blood_pressure_diastolic: Math.round(data.bloodPressureDia),
-        temperature: data.temperature,
-        steps: activityData.steps,
-        exercise_duration: activityData.exerciseMinutes,
-      });
-    } catch (error) {
-      console.error("Failed to save health data:", error);
-    }
-  };
 
   // Simulate real-time data updates
   useEffect(() => {
@@ -80,73 +70,36 @@ const Dashboard = () => {
         temperature: 98.2 + Math.random() * 0.8,
       };
 
-      setHealthData(prev => {
-        setPreviousData(prev[prev.length - 1]);
-        return [...prev.slice(-4), newDataPoint];
-      });
-      
-      // Update activity data
-      setActivityData(prev => ({
-        steps: prev.steps + Math.floor(Math.random() * 100),
-        exerciseMinutes: prev.exerciseMinutes
-      }));
-
-      // Save to history every 5 minutes (every 20th update at 15s intervals)
-      if (Math.random() < 0.05) {
-        saveHealthToHistory(newDataPoint);
-      }
-    }, 15000);
+      setHealthData(prev => [...prev.slice(-4), newDataPoint]);
+    }, 15000); // Update every 15 seconds
 
     return () => clearInterval(interval);
-  }, [user]);
+  }, []);
 
   const currentData = healthData[healthData.length - 1];
 
-  // Health notifications hook
-  const { requestPermission } = useHealthNotifications(
-    currentData,
-    activityData.steps
-  );
-
+  // Function to determine glucose status
   const getGlucoseStatus = (glucose: number) => {
-    if (glucose < 70) return "warning";
-    if (glucose > 140) return "danger";
-    return "normal";
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    toast.success("Signed out successfully");
+    if (glucose < 70) return "warning"; // Low
+    if (glucose > 140) return "danger"; // High
+    return "normal"; // Normal
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/10 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="text-center flex-1 space-y-4">
-            <h1 className="text-5xl font-black bg-gradient-primary bg-clip-text text-transparent animate-pulse-glow">
-              Smart Shoe Health Monitor
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Revolutionary non-invasive health monitoring through intelligent footwear technology
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={handleSignOut}
-            className="gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </Button>
+        <div className="text-center space-y-4">
+          <h1 className="text-5xl font-black bg-gradient-primary bg-clip-text text-transparent animate-pulse-glow">
+            Smart Shoe Health Monitor
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Revolutionary non-invasive health monitoring through intelligent footwear technology
+          </p>
         </div>
 
-        {/* Notification Settings + Shoe Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <NotificationSettings onRequestPermission={requestPermission} />
-          <ShoeStatus {...shoeStatus} />
-        </div>
+        {/* Shoe Status */}
+        <ShoeStatus {...shoeStatus} />
 
         {/* Health Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -187,26 +140,17 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Activity Tracking */}
-        <ActivityTracking 
-          glucoseLevel={currentData.glucose}
-          steps={activityData.steps}
-          exerciseMinutes={activityData.exerciseMinutes}
-        />
-
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Left Column - Chart and AI */}
           <div className="xl:col-span-2 space-y-8">
             <HealthChart data={healthData} />
-            <AIInsights currentData={currentData} previousData={previousData || undefined} />
-            <HealthHistory />
+            <AIInsights insights={aiInsights} />
           </div>
           
-          {/* Right Column - Food, Medications, Insulin */}
+          {/* Right Column - Food Suggestions */}
           <div className="space-y-8">
-            <MedicationAlerts />
-            <FoodSuggestions glucoseLevel={currentData.glucose} heartRate={currentData.heartRate} />
+            <FoodSuggestions glucoseLevel={currentData.glucose} />
             <InsulinAlerts />
           </div>
         </div>
