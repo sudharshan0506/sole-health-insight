@@ -136,8 +136,11 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Shoe Status */}
-        <ShoeStatus {...shoeStatus} />
+        {/* Notification Settings + Shoe Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <NotificationSettings onRequestPermission={requestPermission} />
+          <ShoeStatus {...shoeStatus} />
+        </div>
 
         {/* Health Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
