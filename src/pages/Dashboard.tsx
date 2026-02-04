@@ -102,6 +102,12 @@ const Dashboard = () => {
 
   const currentData = healthData[healthData.length - 1];
 
+  // Health notifications hook
+  const { requestPermission } = useHealthNotifications(
+    currentData,
+    activityData.steps
+  );
+
   const getGlucoseStatus = (glucose: number) => {
     if (glucose < 70) return "warning";
     if (glucose > 140) return "danger";
