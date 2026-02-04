@@ -50,7 +50,7 @@ export const useHealthNotifications = (
     return false;
   }, []);
 
-  const sendNotification = useCallback((title: string, options: NotificationOptions) => {
+  const sendNotification = useCallback((title: string, options: { body?: string; tag?: string; isCritical?: boolean }) => {
     if (!("Notification" in window)) return;
 
     if (Notification.permission === "granted") {
@@ -58,9 +58,9 @@ export const useHealthNotifications = (
         const notification = new Notification(title, {
           icon: "/favicon.ico",
           badge: "/favicon.ico",
-          vibrate: [200, 100, 200],
           requireInteraction: true,
-          ...options,
+          body: options.body,
+          tag: options.tag,
         });
 
         notification.onclick = () => {
@@ -69,7 +69,7 @@ export const useHealthNotifications = (
         };
 
         // Also show in-app toast
-        if (options.tag?.includes("critical")) {
+        if (options.isCritical) {
           toast.error(title, { description: options.body, duration: 10000 });
         } else if (options.tag?.includes("goal")) {
           toast.success(title, { description: options.body, duration: 5000 });
@@ -94,14 +94,14 @@ export const useHealthNotifications = (
       sendNotification("⚠️ CRITICAL: Low Glucose Alert!", {
         body: `Your glucose is ${Math.round(glucose)} mg/dL - dangerously low! Consume fast-acting carbs immediately.`,
         tag: "glucose-critical-low",
-        urgency: "critical" as any,
+        isCritical: true,
       });
     } else if (glucose > glucoseHighThreshold && lastGlucoseAlert.current !== "high") {
       lastGlucoseAlert.current = "high";
       sendNotification("🚨 CRITICAL: High Glucose Alert!", {
         body: `Your glucose is ${Math.round(glucose)} mg/dL - critically high! Consider insulin and avoid carbohydrates.`,
         tag: "glucose-critical-high",
-        urgency: "critical" as any,
+        isCritical: true,
       });
     } else if (glucose >= glucoseLowThreshold && glucose <= glucoseHighThreshold) {
       lastGlucoseAlert.current = null;

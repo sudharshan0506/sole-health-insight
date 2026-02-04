@@ -9,11 +9,13 @@ import { HospitalFinder } from "@/components/HospitalFinder";
 import { MedicationAlerts } from "@/components/MedicationAlerts";
 import { HealthHistory } from "@/components/HealthHistory";
 import { ActivityTracking } from "@/components/ActivityTracking";
+import { NotificationSettings } from "@/components/NotificationSettings";
 import { Activity, Droplet, Heart, Thermometer, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useHealthNotifications } from "@/hooks/useHealthNotifications";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
