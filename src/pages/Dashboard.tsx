@@ -25,32 +25,7 @@ const Dashboard = () => {
     { time: "11:00", glucose: 94, heartRate: 71, bloodPressureSys: 117, bloodPressureDia: 77, temperature: 98.6 },
   ]);
 
-  const [aiInsights, setAiInsights] = useState([
-    {
-      id: "1",
-      type: "normal" as const,
-      title: "Glucose Levels Stable",
-      message: "Your glucose levels are within the normal range (70-100 mg/dL). Keep up the good work!",
-      confidence: 95,
-      timestamp: "2 minutes ago"
-    },
-    {
-      id: "2",
-      type: "recommendation" as const,
-      title: "Heart Rate Optimization",
-      message: "Consider light exercise to maintain optimal cardiovascular health. Your current heart rate suggests good fitness.",
-      confidence: 87,
-      timestamp: "5 minutes ago"
-    },
-    {
-      id: "3",
-      type: "prediction" as const,
-      title: "Glucose Trend Analysis",
-      message: "Based on current patterns, glucose levels may increase slightly after meals. Monitor for next 2 hours.",
-      confidence: 78,
-      timestamp: "10 minutes ago"
-    }
-  ]);
+  const [previousData, setPreviousData] = useState<typeof healthData[0] | null>(null);
 
   const [shoeStatus, setShoeStatus] = useState({
     isConnected: true,
@@ -103,7 +78,10 @@ const Dashboard = () => {
         temperature: 98.2 + Math.random() * 0.8,
       };
 
-      setHealthData(prev => [...prev.slice(-4), newDataPoint]);
+      setHealthData(prev => {
+        setPreviousData(prev[prev.length - 1]);
+        return [...prev.slice(-4), newDataPoint];
+      });
       
       // Update activity data
       setActivityData(prev => ({
@@ -210,14 +188,14 @@ const Dashboard = () => {
           {/* Left Column - Chart and AI */}
           <div className="xl:col-span-2 space-y-8">
             <HealthChart data={healthData} />
-            <AIInsights insights={aiInsights} />
+            <AIInsights currentData={currentData} previousData={previousData || undefined} />
             <HealthHistory />
           </div>
           
           {/* Right Column - Food, Medications, Insulin */}
           <div className="space-y-8">
             <MedicationAlerts />
-            <FoodSuggestions glucoseLevel={currentData.glucose} />
+            <FoodSuggestions glucoseLevel={currentData.glucose} heartRate={currentData.heartRate} />
             <InsulinAlerts />
           </div>
         </div>
