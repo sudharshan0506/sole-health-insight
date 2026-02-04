@@ -9,11 +9,13 @@ import { HospitalFinder } from "@/components/HospitalFinder";
 import { MedicationAlerts } from "@/components/MedicationAlerts";
 import { HealthHistory } from "@/components/HealthHistory";
 import { ActivityTracking } from "@/components/ActivityTracking";
+import { NotificationSettings } from "@/components/NotificationSettings";
 import { Activity, Droplet, Heart, Thermometer, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useHealthNotifications } from "@/hooks/useHealthNotifications";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -100,6 +102,12 @@ const Dashboard = () => {
 
   const currentData = healthData[healthData.length - 1];
 
+  // Health notifications hook
+  const { requestPermission } = useHealthNotifications(
+    currentData,
+    activityData.steps
+  );
+
   const getGlucoseStatus = (glucose: number) => {
     if (glucose < 70) return "warning";
     if (glucose > 140) return "danger";
@@ -134,8 +142,11 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Shoe Status */}
-        <ShoeStatus {...shoeStatus} />
+        {/* Notification Settings + Shoe Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <NotificationSettings onRequestPermission={requestPermission} />
+          <ShoeStatus {...shoeStatus} />
+        </div>
 
         {/* Health Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
